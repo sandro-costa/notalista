@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#FBF4E6"/>
+  <circle cx="256" cy="256" r="184" fill="#E55A3F"/>
+  <g stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" fill="none">
+    <circle cx="196" cy="200" r="16"/>
+    <line x1="240" y1="200" x2="336" y2="200"/>
+    <circle cx="196" cy="262" r="16"/>
+    <line x1="240" y1="262" x2="336" y2="262"/>
+    <circle cx="196" cy="324" r="16"/>
+    <line x1="240" y1="324" x2="336" y2="324"/>
+  </g>
+  <polyline points="186,200 194,210 212,188" stroke="#FFFFFF" stroke-width="18" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

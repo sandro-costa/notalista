@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NotaLista — A lista de compras que nasce da nota fiscal</title>
+<meta name="description" content="Escaneie o QR code da NFC-e e a lista de compras se monta sozinha: itens, marcas, quantidades, preços e histórico. Sem digitar nada.">
+<meta name="theme-color" content="#E55A3F">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/style.css?v=1">
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="index.html">NotaLista<span class="dot">.</span></a>
+    <nav class="main-nav" id="mainNav" aria-label="Menu principal">
+      <a class="nav-link" href="#como-funciona">Como funciona</a>
+      <a class="nav-link" href="#recursos">Recursos</a>
+      <a class="nav-link" href="#planos">Planos</a>
+      <a class="nav-link" href="#faq">Dúvidas</a>
+      <a class="nav-link" href="app.html">Abrir o app</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-ghost btn-sm" href="app.html">Abrir o app</a>
+      <a class="btn btn-primary btn-sm" href="#planos">Assinar <span class="arrow">→</span></a>
+      <button class="hamburger" id="hamburger" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <div class="pills">
+          <span class="pill"><span class="dot"></span> Da nota à lista pronta</span>
+          <span class="pill"><span class="x">✕</span> Sem digitar nada</span>
+        </div>
+        <h1>A lista do mercado pronta a partir da <span class="wavy">nota fiscal</span>.</h1>
+        <p class="lead">Escaneie o QR code da NFC-e. A NotaLista lê os itens, acompanha preços e aprende o que a sua casa compra — <strong>sem você digitar uma letra</strong>. Anotou? NotaLista.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary btn-lg" href="#planos">Quero minha lista no automático <span class="arrow">→</span></a>
+          <a class="btn btn-ghost btn-lg" href="app.html">Experimentar o app</a>
+        </div>
+        <div class="steps-strip">
+          <span class="step-chip"><b>1</b> Pega a nota no caixa</span>
+          <span class="step-chip"><b>2</b> Escaneia o QR code</span>
+          <span class="step-chip"><b>3</b> Confirma que é você</span>
+          <span class="step-chip"><b>4</b> O app monta tudo</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="float-card qr">
+          <svg class="qr-mini" viewBox="0 0 40 40" aria-hidden="true"><g fill="#3A2A1C"><rect x="0" y="0" width="10" height="10"/><rect x="14" y="0" width="6" height="6"/><rect x="24" y="0" width="4" height="4"/><rect x="0" y="14" width="6" height="6"/><rect x="10" y="14" width="4" height="4"/><rect x="20" y="12" width="6" height="6"/><rect x="30" y="14" width="8" height="8"/><rect x="0" y="26" width="4" height="4"/><rect x="8" y="24" width="6" height="6"/><rect x="18" y="26" width="4" height="4"/><rect x="26" y="26" width="5" height="5"/><rect x="34" y="34" width="6" height="6"/></g></svg>
+          <span>Fotografou a nota.<br>Tudo entra sozinho.</span>
+        </div>
+        <div class="float-card price">
+          <span class="ico">📉</span>
+          <span>Arroz: −12% na sua média</span>
+        </div>
+        <div class="phone" role="img" aria-label="Prévia do app NotaLista com uma lista de compras">
+          <div class="phone-screen">
+            <div class="phone-top">
+              <strong>Lista do mês</strong>
+              <span class="badge">Lista Mágica</span>
+            </div>
+            <div class="app-item done"><span class="chk">✓</span> Arroz tipo 1, 5 kg <em>R$ 24,90</em></div>
+            <div class="app-item"><span class="chk"></span> <span><span class="cat">AÇOUGUE</span><br>Frango inteiro</span> <em>R$ 13,90/kg</em></div>
+            <div class="app-item"><span class="chk"></span> <span><span class="cat">LIMPEZA</span><br>Detergente neutro</span> <em>R$ 2,49</em></div>
+            <div class="app-item"><span class="chk"></span> <span><span class="cat">HORTIFRUTI</span><br>Banana prata</span> <em>R$ 7,90/kg</em></div>
+            <div class="app-item"><span class="chk"></span> <span><span class="cat">PADARIA</span><br>Pão francês</span> <em>R$ 18,90/kg</em></div>
+            <div class="app-scan">📷 Escanear nota (NFC-e)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- banner importação DF -->
+    <div class="container">
+      <div class="df-banner">
+        <div>
+          <h3>🎁 Mora no DF? Importe 1 ano do seu histórico, grátis.</h3>
+          <p>A extensão do Chrome lê o extrato da sua conta no Nota Legal DF e traz as notas do último ano para o app — preços e histórico prontos antes da primeira compra.</p>
+        </div>
+        <a class="btn" href="#faq">Como funciona</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMO FUNCIONA ===================== -->
+  <section class="section" id="como-funciona">
+    <div class="container">
+      <div class="section-head center">
+        <span class="kicker">Como funciona</span>
+        <h2>Você não digita, não atualiza, não escreve lista.</h2>
+        <p class="sub">Só fotografa a nota na saída do caixa. O resto o app faz por você.</p>
+      </div>
+      <div class="cards-3">
+        <div class="card">
+          <span class="num">1</span>
+          <h3>Fotografa o QR code</h3>
+          <p>Sai do caixa, abre o app, foto. Cada item, marca, quantidade e preço entram em segundos.</p>
+        </div>
+        <div class="card">
+          <span class="num">2</span>
+          <h3>O app lê e aprende</h3>
+          <p>Depois de 3 ou 4 compras, identifica o que é semanal, o que é mensal e qual marca a sua casa consome.</p>
+        </div>
+        <div class="card">
+          <span class="num">3</span>
+          <h3>Lista e histórico prontos</h3>
+          <p>A próxima lista se monta sozinha, com preço acompanhado e o mercado mais barato na frente.</p>
+        </div>
+      </div>
+      <div class="strip">
+        <div class="strip-item">
+          <span class="ico">⚡</span>
+          <p><strong>A compra inteira capturada em segundos</strong>, sem digitar uma letra.</p>
+        </div>
+        <div class="strip-item">
+          <span class="ico">🔒</span>
+          <p><strong>Lê o QR code público da nota</strong>, conforme a LGPD.</p>
+        </div>
+        <div class="strip-item">
+          <span class="ico">📸</span>
+          <p><strong>Sem nota? Tire uma foto do cupom</strong> e confirme os itens.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LISTA SOZINHA ===================== -->
+  <section class="section alt">
+    <div class="container split">
+      <div>
+        <span class="kicker">A lista</span>
+        <h2>A lista que se monta sozinha.</h2>
+        <p class="sub">Na próxima ida ao mercado, já está pronta no celular do casal, com o que falta e na marca certa.</p>
+        <div class="bullets">
+          <div class="bullet">
+            <span class="ico">✨</span>
+            <p><strong>Lista Mágica</strong><span>Sugere o que está na hora de repor.</span></p>
+          </div>
+          <div class="bullet green">
+            <span class="ico">👥</span>
+            <p><strong>Compartilhada em tempo real</strong><span>Você e o parceiro(a) na mesma lista.</span></p>
+          </div>
+          <div class="bullet">
+            <span class="ico">✅</span>
+            <p><strong>Marque com um toque</strong><span>Deslize para concluir o item.</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="panel" role="img" aria-label="Exemplo de lista compartilhada no app">
+        <h4>🛒 Lista do casal <span class="badge">sincronizada agora</span></h4>
+        <div class="panel-row done"><span class="chk">✓</span> Café em grão, 500 g <em>R$ 21,90</em></div>
+        <div class="panel-row"><span class="chk"></span> Leite desnatado, cx <em>R$ 5,49</em></div>
+        <div class="panel-row"><span class="chk"></span> Sabão em pó, 1 kg <em>R$ 12,30</em></div>
+        <div class="panel-row"><span class="chk"></span> Tomate <em>R$ 8,90/kg</em></div>
+        <div class="panel-total"><span>9 itens · 3 concluídos</span><span>R$ 84,20</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PREÇOS ===================== -->
+  <section class="section">
+    <div class="container split">
+      <div class="panel" role="img" aria-label="Gráfico de variação de preço de um item">
+        <h4>Frango inteiro <span class="delta-up">▲ 18% acima da média</span></h4>
+        <div class="panel-row"><span>Casa A — 12/09</span><em>R$ 12,90/kg</em></div>
+        <div class="panel-row"><span>Mercado B — 28/09</span><em>R$ 11,90/kg</em></div>
+        <div class="panel-row"><span>Atacadão — 05/10</span><em>R$ 13,90/kg</em></div>
+        <svg class="spark" viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true">
+          <polyline points="0,30 60,26 120,34 180,22 240,10 300,6" fill="none" stroke="#E55A3F" stroke-width="3" stroke-linecap="round"/>
+          <polyline points="0,30 60,26 120,34 180,22 240,10 300,6 300,70 0,70" fill="rgba(229,90,63,.12)" stroke="none"/>
+        </svg>
+      </div>
+      <div>
+        <span class="kicker">Preços</span>
+        <h2>Veja o preço de cada item subir e cair.</h2>
+        <p class="sub">O app guarda o histórico de preço de tudo que você compra. Você vê a variação ao longo do tempo e sabe quando algo está caro de verdade.</p>
+        <div class="bullets">
+          <div class="bullet">
+            <span class="ico">📈</span>
+            <p><strong>Gráfico do preço por unidade</strong><span>Ao longo do tempo, item por item.</span></p>
+          </div>
+          <div class="bullet green">
+            <span class="ico">🏪</span>
+            <p><strong>Compare entre mercados</strong><span>O mesmo item, loja por loja.</span></p>
+          </div>
+          <div class="bullet">
+            <span class="ico">🔔</span>
+            <p><strong>Alerta de preço</strong><span>"Frango está 18% acima da sua média."</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== HISTÓRICO ===================== -->
+  <section class="section alt">
+    <div class="container split">
+      <div>
+        <span class="kicker">Histórico</span>
+        <h2>Todo o mercado da sua casa, registrado.</h2>
+        <p class="sub">Cada compra vira histórico: quanto você gastou, onde, e como os preços mudaram ao longo dos meses. A memória da casa, sem planilha.</p>
+        <div class="bullets">
+          <div class="bullet">
+            <span class="ico">🧾</span>
+            <p><strong>Toda nota guardada</strong><span>Organizada por loja e data.</span></p>
+          </div>
+          <div class="bullet green">
+            <span class="ico">💰</span>
+            <p><strong>Para onde vai o dinheiro</strong><span>Gastos por categoria e por mês.</span></p>
+          </div>
+        </div>
+      </div>
+      <div class="panel" role="img" aria-label="Resumo de gastos por mês">
+        <h4>Gastos do mercado</h4>
+        <div class="panel-row"><span>Agosto</span><em>R$ 1.243,00</em></div>
+        <div class="panel-row"><span>Setembro</span><em>R$ 1.089,00</em></div>
+        <div class="panel-row"><span>Outubro (parcial)</span><em>R$ 612,00</em></div>
+        <svg class="spark" viewBox="0 0 300 70" preserveAspectRatio="none" aria-hidden="true">
+          <rect x="10" y="18" width="60" height="52" rx="8" fill="#E7DAC2"/>
+          <rect x="120" y="30" width="60" height="40" rx="8" fill="#E7DAC2"/>
+          <rect x="230" y="44" width="60" height="26" rx="8" fill="#E55A3F"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RECURSOS ===================== -->
+  <section class="section" id="recursos">
+    <div class="container">
+      <div class="section-head center">
+        <span class="kicker">Recursos</span>
+        <h2>Pensado para quem carrega a casa na cabeça.</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="ico">✨</span>
+          <h3>Lista Mágica</h3>
+          <p>Monta a lista do mês inteira a partir do que você costuma comprar e do que está na hora de repor.</p>
+        </div>
+        <div class="feature-card green">
+          <span class="ico">🏪</span>
+          <h3>Mercado mais barato</h3>
+          <p>Mostra onde cada item sai mais em conta.</p>
+        </div>
+        <div class="feature-card">
+          <span class="ico">🔔</span>
+          <h3>Alerta de preço</h3>
+          <p>Avisa quando algo está acima da sua média.</p>
+        </div>
+        <div class="feature-card green">
+          <span class="ico">👥</span>
+          <h3>A dois</h3>
+          <p>Lista compartilhada com o parceiro(a).</p>
+        </div>
+        <div class="feature-card">
+          <span class="ico">🗂️</span>
+          <h3>Categorias automáticas</h3>
+          <p>Hortifruti, açougue, limpeza — organizado sozinho.</p>
+        </div>
+        <div class="feature-card green">
+          <span class="ico">📝</span>
+          <h3>Várias listas</h3>
+          <p>Mercado, farmácia, festa: quantas quiser.</p>
+        </div>
+        <div class="feature-card">
+          <span class="ico">🛡️</span>
+          <h3>100% LGPD</h3>
+          <p>Lê apenas o QR code público da nota. Guarda só produto, preço, data e loja.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PLANOS ===================== -->
+  <section class="section alt" id="planos">
+    <div class="container">
+      <div class="section-head center">
+        <span class="kicker">Planos</span>
+        <h2>Deixe a lista do mercado no automático.</h2>
+        <p class="sub">Todos os recursos, sem anúncios. Escolha o plano e assine em segundos.</p>
+      </div>
+      <div class="plans">
+        <div class="plan">
+          <h3>Mensal</h3>
+          <div class="price">R$ 19,90<small>/mês</small></div>
+          <p class="desc">No Pix ou no cartão. Cancele quando quiser.</p>
+          <a class="btn btn-ghost" href="app.html">Assinar <span class="arrow">→</span></a>
+        </div>
+        <div class="plan featured">
+          <span class="plan-tag">Melhor valor · economize 58%</span>
+          <h3>Anual</h3>
+          <div class="price">R$ 99<small>/ano</small></div>
+          <p class="desc">No Pix ou no cartão, renova sozinho. Menos de R$ 8,25/mês.</p>
+          <a class="btn btn-primary" href="app.html">Assinar <span class="arrow">→</span></a>
+        </div>
+      </div>
+      <ul class="plan-checks">
+        <li><span class="chk">✓</span> Captura por NFC-e</li>
+        <li><span class="chk">✓</span> Lista Mágica e lista a dois</li>
+        <li><span class="chk">✓</span> Preços e histórico</li>
+        <li><span class="chk">✓</span> Sem anúncios</li>
+      </ul>
+      <p class="pay-note">🔒 Pagamento seguro: Pix e cartão. Cancele quando quiser, sem multa.</p>
+    </div>
+  </section>
+
+  <!-- ===================== FAQ ===================== -->
+  <section class="section" id="faq">
+    <div class="container">
+      <div class="section-head center">
+        <span class="kicker">FAQ</span>
+        <h2>O que perguntam antes de assinar</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>Quanto custa?</summary>
+          <div class="answer">R$ 19,90 por mês ou R$ 99 por ano. No plano anual você economiza cerca de 58% (menos de R$ 8,25 por mês). Os dois planos dão acesso a todos os recursos, sem anúncios.</div>
+        </details>
+        <details>
+          <summary>Posso cancelar quando quiser?</summary>
+          <div class="answer">Sim, a qualquer momento, direto pelo app ou pelo painel da assinatura. Sem multa e sem fidelidade. Você continua com acesso até o fim do período já pago.</div>
+        </details>
+        <details>
+          <summary>Como funciona o pagamento?</summary>
+          <div class="answer">Você escolhe Pix ou cartão de crédito. O Pix renova sozinho pelo Pix Automático; no cartão, os dados são digitados no ambiente seguro do processador — o app não armazena os dados do seu cartão.</div>
+        </details>
+        <details>
+          <summary>Funciona com qualquer nota fiscal de mercado?</summary>
+          <div class="answer">Funciona com qualquer NFC-e brasileira (nota fiscal de consumidor eletrônica emitida pela Sefaz). Praticamente todo supermercado, atacarejo e farmácia do Brasil emite NFC-e desde 2014. Basta a nota ter o QR code impresso no cupom.</div>
+        </details>
+        <details>
+          <summary>Tenho iPhone. Vai funcionar no iOS?</summary>
+          <div class="answer">Funciona, pelo navegador — inclusive como PWA (instala na tela de início pelo menu "Adicionar à Tela de Início" do Safari). A mesma conta, os mesmos recursos: lista, histórico de preços e a residência compartilhada.</div>
+        </details>
+        <details>
+          <summary>Moro no DF. Dá para importar meu histórico de compras?</summary>
+          <div class="answer">Sim. A extensão do Chrome lê o extrato da sua conta no Nota Legal DF e traz o último ano de notas para o app — grátis, uma vez por casa.</div>
+        </details>
+        <details>
+          <summary>Meus dados ficam seguros?</summary>
+          <div class="answer">O app lê apenas o QR code público da NFC-e e guarda só produto, preço, data e loja, conforme a LGPD. Nada é compartilhado com terceiros, e você pode pedir a exclusão dos seus dados a qualquer momento.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA FINAL ===================== -->
+  <section class="section">
+    <div class="container">
+      <div class="final-cta">
+        <h2>A lista do mercado pode parar de morar na sua cabeça.</h2>
+        <p>Escolha seu plano e deixe a lista, os preços e o histórico no automático. Anotou? NotaLista.</p>
+        <a class="btn btn-lg" href="#planos">Assinar agora <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <a class="logo" href="index.html">NotaLista<span class="dot">.</span></a>
+    <nav class="footer-links" aria-label="Links do rodapé">
+      <a href="#">Política de Privacidade</a>
+      <a href="#">Exclusão de Dados</a>
+      <a href="#planos">Planos</a>
+      <a href="app.html">Abrir o app</a>
+    </nav>
+    <p class="footer-note">© <span id="year"></span> NotaLista. Todos os direitos reservados. Construído para quem carrega a casa na cabeça.</p>
+  </div>
+</footer>
+
+<!-- ===================== COOKIES ===================== -->
+<div class="cookie-bar" id="cookieBar" role="dialog" aria-label="Aviso de cookies">
+  <span>Usamos cookies de análise para entender o uso do site e melhorar sua experiência. Você pode aceitar ou recusar.</span>
+  <span style="display:flex;gap:8px">
+    <button class="btn btn-ghost btn-sm" data-choice="refused">Recusar</button>
+    <button class="btn btn-primary btn-sm" data-choice="accepted">Aceitar</button>
+  </span>
+</div>
+
+<script src="js/landing.js"></script>
+<script>
+document.getElementById('year').textContent=new Date().getFullYear();
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+</script>
+</body>
+</html>

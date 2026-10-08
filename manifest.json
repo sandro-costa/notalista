@@ -1,0 +1,14 @@
+{
+  "name": "NotaLista",
+  "short_name": "NotaLista",
+  "description": "A lista de compras que nasce da nota fiscal. Escaneie a NFC-e e deixe o app montar tudo.",
+  "start_url": "app.html",
+  "display": "standalone",
+  "background_color": "#FBF4E6",
+  "theme_color": "#E55A3F",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

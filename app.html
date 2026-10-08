@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NotaLista — App</title>
+<meta name="description" content="Sua lista de compras montada a partir das notas fiscais.">
+<meta name="theme-color" content="#E55A3F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="NotaLista">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/style.css?v=1">
+<link rel="stylesheet" href="css/app.css?v=1">
+<link rel="apple-touch-icon" href="img/icon.svg">
+</head>
+<body class="app-body">
+
+<!-- ===================== ONBOARDING ===================== -->
+<div class="modal-back" id="onboarding">
+  <div class="modal">
+    <div class="logo" style="margin-bottom:6px">NotaLista<span class="dot">.</span></div>
+    <h2>Quem carrega a casa?</h2>
+    <p class="muted">Seu nome aparece para quem dividir a lista com você.</p>
+    <input id="obName" class="field" type="text" placeholder="Seu primeiro nome" maxlength="24" autocomplete="nickname">
+    <button class="btn btn-primary btn-lg" id="obGo" style="width:100%;justify-content:center">Começar <span class="arrow">→</span></button>
+    <div class="ob-row" id="obJoin" hidden>
+      <p class="muted">— ou entre numa residência existente —</p>
+      <input id="obCode" class="field" type="text" placeholder="Código do casal (ex.: NL-4K2T)" maxlength="8">
+      <button class="btn btn-ghost" id="obJoinGo" style="width:100%;justify-content:center">Entrar na residência</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCAN SIMULADO ===================== -->
+<div class="modal-back" id="scanModal" hidden>
+  <div class="modal">
+    <h2>📷 Escanear NFC-e</h2>
+    <p class="muted">Aponte para o QR code do cupom. (Demonstração: o leitor real usa a câmera e a consulta pública da Sefaz.)</p>
+    <div class="scan-frame" id="scanFrame">
+      <div class="scan-line"></div>
+      <span>QR code da nota</span>
+    </div>
+    <div id="scanResult" hidden>
+      <div class="scan-store" id="scanStore"></div>
+      <div id="scanItems"></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn btn-ghost" id="scanClose" style="flex:1;justify-content:center">Fechar</button>
+      <button class="btn btn-primary" id="scanSim" style="flex:2;justify-content:center">Simular leitura da nota</button>
+      <button class="btn btn-primary" id="scanConfirm" style="flex:2;justify-content:center" hidden>Adicionar à lista</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TOAST ===================== -->
+<div class="toast" id="toast" hidden></div>
+
+<!-- ===================== APP ===================== -->
+<div class="app" id="appRoot" hidden>
+  <header class="app-header">
+    <div>
+      <div class="app-title" id="listTitle">Lista do mês</div>
+      <div class="app-sub" id="listSub">0 itens · R$ 0,00</div>
+    </div>
+    <div class="app-user">
+      <span class="badge" id="houseBadge" title="Código do casal">residência</span>
+      <span class="avatar" id="userAvatar">?</span>
+    </div>
+  </header>
+
+  <div class="magic-hint" id="magicHint">
+    ✨ <b>Lista Mágica:</b> sugestões baseadas no seu histórico de compras.
+  </div>
+
+  <main class="app-main">
+    <!-- ---------- ABA COMPRAR ---------- -->
+    <section class="tab" id="tab-buy" data-active="true">
+      <div class="filters">
+        <button class="chip active" data-filter="all">Todos</button>
+        <button class="chip" data-filter="pending">Pendentes</button>
+        <button class="chip" data-filter="done">Comprados</button>
+      </div>
+      <ul class="buy-list" id="buyList"></ul>
+      <p class="empty" id="buyEmpty" hidden>Nada por aqui. Escaneie uma nota ou adicione um item. 🛒</p>
+      <button class="btn btn-primary btn-lg add-fab" id="btnAddItem">+ Adicionar item</button>
+    </section>
+
+    <!-- ---------- ABA LISTAS ---------- -->
+    <section class="tab" id="tab-lists" hidden>
+      <ul class="lists-ul" id="listsUl"></ul>
+      <button class="btn btn-ghost" id="btnNewList" style="width:100%;justify-content:center">+ Nova lista</button>
+    </section>
+
+    <!-- ---------- ABA HISTÓRICO ---------- -->
+    <section class="tab" id="tab-history" hidden>
+      <div class="stat-cards">
+        <div class="stat"><span id="stPurchases">0</span><small>compras</small></div>
+        <div class="stat"><span id="stTotal">R$ 0</span><small>gasto total</small></div>
+        <div class="stat"><span id="stItems">0</span><small>itens</small></div>
+      </div>
+      <ul class="history-ul" id="historyUl"></ul>
+      <p class="empty" id="histEmpty" hidden>Sem compras ainda. Escaneie sua primeira nota! 🧾</p>
+    </section>
+
+    <!-- ---------- ABA PREÇOS ---------- -->
+    <section class="tab" id="tab-prices" hidden>
+      <ul class="prices-ul" id="pricesUl"></ul>
+      <p class="empty" id="pricesEmpty" hidden>Os preços aparecem depois da primeira compra escaneada. 📈</p>
+      <div class="alerts-box">
+        <h3>🔔 Alertas de preço</h3>
+        <ul id="alertsUl"><li class="muted">Nenhum alerta por enquanto.</li></ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- barra inferior -->
+  <nav class="tabbar">
+    <button class="tab-btn active" data-tab="buy"><span>🛒</span>Comprar</button>
+    <button class="tab-btn" data-tab="lists"><span>📝</span>Listas</button>
+    <button class="tab-btn scan" id="tabScan" aria-label="Escanear nota"><span>📷</span></button>
+    <button class="tab-btn" data-tab="history"><span>🧾</span>Histórico</button>
+    <button class="tab-btn" data-tab="prices"><span>📈</span>Preços</button>
+  </nav>
+</div>
+
+<!-- ===================== MODAL NOVO ITEM ===================== -->
+<div class="modal-back" id="itemModal" hidden>
+  <div class="modal">
+    <h2>Novo item</h2>
+    <input id="itName" class="field" type="text" placeholder="Produto (ex.: Arroz tipo 1, 5 kg)" maxlength="48">
+    <input id="itPrice" class="field" type="number" min="0" step="0.01" placeholder="Preço (R$)">
+    <select id="itCat" class="field">
+      <option value="MERCADO">Mercado</option>
+      <option value="HORTIFRUTI">Hortifruti</option>
+      <option value="AÇOUGUE">Açougue</option>
+      <option value="PADARIA">Padaria</option>
+      <option value="LIMPEZA">Limpeza</option>
+      <option value="FARMÁCIA">Farmácia</option>
+      <option value="FESTA">Festa</option>
+    </select>
+    <div style="display:flex;gap:10px;margin-top:16px">
+      <button class="btn btn-ghost" id="itCancel" style="flex:1;justify-content:center">Cancelar</button>
+      <button class="btn btn-primary" id="itSave" style="flex:2;justify-content:center">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}
+</script>
+</body>
+</html>
