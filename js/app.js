@@ -252,8 +252,20 @@ function onQR(text){
   $('scanMeta').innerHTML=
     '<span class="meta-line">✔ Chave de acesso válida (DV ok)</span>'+
     '<span class="meta-line">Emitente CNPJ '+note.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{3})(\d{2})$/,'$1.$2.$3/$4-$5')+' · '+note.uf+'</span>'+
-    (note.valorTotal!=null?'<span class="meta-line">Valor total '+brl(note.valorTotal)+' ('+note.tpAmb+')</span>':'');
+    (note.valorTotal!=null?'<span class="meta-line">Valor total '+brl(note.valorTotal)+' ('+note.tpAmb+')</span>':'')+
+    '<button class="btn btn-ghost btn-sm" id="scanCopy" style="margin-top:8px">📋 Copiar link da nota</button>';
   $('scanResult').hidden=false;
+  var cbCopy=document.getElementById('scanCopy');
+  if(cbCopy) cbCopy.addEventListener('click',function(){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(note.consultaUrl).then(
+        function(){ toast('Link copiado ✓'); },
+        function(){ prompt('Copie o link da nota (Ctrl+C):', note.consultaUrl); }
+      );
+    } else {
+      prompt('Copie o link da nota (Ctrl+C):', note.consultaUrl);
+    }
+  });
 
   // itens: proxy Sefaz se configurado
   $('scanItems').innerHTML='<p class="muted" style="text-align:left">Buscando itens na Sefaz…</p>';
