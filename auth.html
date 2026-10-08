@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NotaLista — Entrar</title>
+<meta name="theme-color" content="#E55A3F">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="stylesheet" href="css/app.css?v=2">
+</head>
+<body class="app-body">
+
+<div class="login-wrap">
+  <div class="login-card">
+    <a class="logo" href="index.html">NotaLista<span class="dot">.</span></a>
+    <h2 id="formTitle">Entrar na sua conta</h2>
+    <p class="muted" id="formSub">Sua lista, seus preços, seu histórico — na nuvem.</p>
+
+    <div class="cloud-badge" id="cloudBadge">…</div>
+
+    <form id="formSignin">
+      <input id="inEmail" class="field" type="email" placeholder="E-mail" autocomplete="email" required>
+      <input id="inPass" class="field" type="password" placeholder="Senha" autocomplete="current-password" required minlength="6">
+      <button class="btn btn-primary btn-lg" type="submit" style="width:100%;justify-content:center">Entrar</button>
+      <button class="btn btn-ghost" type="button" id="goSignup" style="width:100%;justify-content:center;margin-top:10px">Criar conta</button>
+      <button class="btn btn-ghost" type="button" id="goForgot" style="width:100%;justify-content:center;margin-top:6px">Esqueci minha senha</button>
+    </form>
+
+    <form id="formSignup" hidden>
+      <input id="upName" class="field" type="text" placeholder="Seu nome" autocomplete="name" required>
+      <input id="upEmail" class="field" type="email" placeholder="E-mail" autocomplete="email" required>
+      <input id="upPass" class="field" type="password" placeholder="Senha (mín. 6 caracteres)" autocomplete="new-password" required minlength="6">
+      <button class="btn btn-primary btn-lg" type="submit" style="width:100%;justify-content:center">Criar conta</button>
+      <button class="btn btn-ghost" type="button" id="goSignin" style="width:100%;justify-content:center;margin-top:10px">Já tenho conta</button>
+    </form>
+
+    <form id="formForgot" hidden>
+      <input id="fpEmail" class="field" type="email" placeholder="Seu e-mail" autocomplete="email" required>
+      <button class="btn btn-primary btn-lg" type="submit" style="width:100%;justify-content:center">Enviar link de recuperação</button>
+      <button class="btn btn-ghost" type="button" id="goSignin2" style="width:100%;justify-content:center;margin-top:10px">Voltar</button>
+    </form>
+
+    <p class="msg" id="msg" hidden></p>
+
+    <div class="local-block" id="localBlock" hidden>
+      <p class="muted">Sem nuvem configurada? Use o app no modo local (dados só neste aparelho):</p>
+      <input id="localName" class="field" type="text" placeholder="Seu primeiro nome" maxlength="24">
+      <button class="btn btn-ghost" id="localGo" style="width:100%;justify-content:center">Entrar no modo local</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/auth.js"></script>
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+var mode='signin';
+function show(which){
+  $('formSignin').hidden = which!=='signin';
+  $('formSignup').hidden = which!=='signup';
+  $('formForgot').hidden = which!=='forgot';
+  $('msg').hidden = true;
+  $('formTitle').textContent = which==='signup' ? 'Criar conta' : which==='forgot' ? 'Recuperar senha' : 'Entrar na sua conta';
+}
+function say(text, ok){
+  var m=$('msg'); m.textContent=text; m.className='msg '+(ok?'ok':'err'); m.hidden=false;
+}
+$('goSignup').addEventListener('click',function(){show('signup')});
+$('goSignin').addEventListener('click',function(){show('signin')});
+$('goSignin2').addEventListener('click',function(){show('signin')});
+$('goForgot').addEventListener('click',function(){show('forgot')});
+
+function redirect(){
+  location.href='app.html';
+}
+
+NL.auth.init().then(function(user){
+  // badge do modo
+  var cloud = NL.auth.isCloud();
+  $('cloudBadge').textContent = cloud ? '☁️ Login real ativo (Supabase)' : '⚠️ Modo local — configure js/config.js para contas reais';
+  $('localBlock').hidden = cloud;
+  if (user) redirect();
+});
+
+$('formSignin').addEventListener('submit',function(e){
+  e.preventDefault();
+  NL.auth.signIn($('inEmail').value.trim(), $('inPass').value)
+    .then(redirect)
+    .catch(function(err){ say(err.message||'Falha ao entrar.', false); });
+});
+$('formSignup').addEventListener('submit',function(e){
+  e.preventDefault();
+  NL.auth.signUp($('upEmail').value.trim(), $('upPass').value, $('upName').value.trim())
+    .then(function(res){
+      if (res && res.data && res.data.user && !res.data.session) {
+        say('Conta criada! Confirme pelo e-mail que enviamos e faça login.', true);
+        show('signin');
+      } else redirect();
+    })
+    .catch(function(err){ say(err.message||'Falha ao criar conta.', false); });
+});
+$('formForgot').addEventListener('submit',function(e){
+  e.preventDefault();
+  NL.auth.resetPassword($('fpEmail').value.trim())
+    .then(function(){ say('Enviamos um link de recuperação para o seu e-mail.', true); })
+    .catch(function(err){ say(err.message||'Falha ao enviar.', false); });
+});
+$('localGo').addEventListener('click',function(){
+  var n=$('localName').value.trim(); if(!n){$('localName').focus();return;}
+  NL.auth.saveLocal(n); redirect();
+});
+})();
+</script>
+</body>
+</html>

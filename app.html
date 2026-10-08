@@ -10,8 +10,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="NotaLista">
 <link rel="manifest" href="manifest.json">
-<link rel="stylesheet" href="css/style.css?v=1">
-<link rel="stylesheet" href="css/app.css?v=1">
+<link rel="stylesheet" href="css/style.css?v=2">
+<link rel="stylesheet" href="css/app.css?v=2">
 <link rel="apple-touch-icon" href="img/icon.svg">
 </head>
 <body class="app-body">
@@ -32,23 +32,43 @@
   </div>
 </div>
 
-<!-- ===================== SCAN SIMULADO ===================== -->
+<!-- ===================== SCAN REAL (câmera + Sefaz) ===================== -->
 <div class="modal-back" id="scanModal" hidden>
   <div class="modal">
     <h2>📷 Escanear NFC-e</h2>
-    <p class="muted">Aponte para o QR code do cupom. (Demonstração: o leitor real usa a câmera e a consulta pública da Sefaz.)</p>
-    <div class="scan-frame" id="scanFrame">
+    <p class="muted" id="scanHint">Aponte a câmera para o QR code do cupom fiscal.</p>
+
+    <div class="scan-frame video" id="scanFrame">
+      <video id="scanVideo" playsinline muted></video>
       <div class="scan-line"></div>
-      <span>QR code da nota</span>
+      <span class="scan-label" id="scanLabel">procurando QR code…</span>
     </div>
+
     <div id="scanResult" hidden>
       <div class="scan-store" id="scanStore"></div>
+      <div id="scanMeta" class="scan-meta"></div>
       <div id="scanItems"></div>
     </div>
+
+    <div class="scan-error" id="scanError" hidden></div>
+
     <div style="display:flex;gap:10px;margin-top:18px">
       <button class="btn btn-ghost" id="scanClose" style="flex:1;justify-content:center">Fechar</button>
-      <button class="btn btn-primary" id="scanSim" style="flex:2;justify-content:center">Simular leitura da nota</button>
+      <button class="btn btn-ghost" id="scanManual" style="flex:2;justify-content:center">Digitar link do QR</button>
       <button class="btn btn-primary" id="scanConfirm" style="flex:2;justify-content:center" hidden>Adicionar à lista</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== SCAN MANUAL (colar URL do QR) ===================== -->
+<div class="modal-back" id="manualModal" hidden>
+  <div class="modal">
+    <h2>🔗 Link do QR code</h2>
+    <p class="muted">Cole a URL que aparece no QR code do cupom (começa com dfe-portal.svrs.rs.gov.br ou sefaz de sua UF).</p>
+    <input id="manualUrl" class="field" type="url" placeholder="https://dfe-portal.svrs.rs.gov.br/NFCE/ConsultaInfoQRCode?...">
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button class="btn btn-ghost" id="manualCancel" style="flex:1;justify-content:center">Cancelar</button>
+      <button class="btn btn-primary" id="manualGo" style="flex:2;justify-content:center">Ler nota</button>
     </div>
   </div>
 </div>
@@ -64,8 +84,8 @@
       <div class="app-sub" id="listSub">0 itens · R$ 0,00</div>
     </div>
     <div class="app-user">
-      <span class="badge" id="houseBadge" title="Código do casal">residência</span>
-      <span class="avatar" id="userAvatar">?</span>
+      <span class="badge" id="houseBadge" title="Residência">residência</span>
+      <a class="avatar" id="userAvatar" href="auth.html" title="Conta">?</a>
     </div>
   </header>
 
@@ -146,6 +166,11 @@
   </div>
 </div>
 
+<script src="js/config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/sefaz.js"></script>
 <script src="js/app.js"></script>
 <script>
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){});}

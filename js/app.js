@@ -1,29 +1,33 @@
 /* =====================================================
-   NotaLista — app.js (demo funcional, tudo local)
-   Lista, listas múltiplas, histórico e preços em localStorage.
+   NotaLista — app.js (login real + scan real de NFC-e)
+   - Conta via NL.auth (Supabase ou local)
+   - QR real: câmera + jsQR → parse/validação Sefaz
+   - Itens: proxy Sefaz (se configurado) ou entrada manual
+   - Listas, histórico e preços em localStorage (por conta)
    ===================================================== */
 (function(){
 'use strict';
 
-/* ---------- estado ---------- */
+/* ---------- estado (por usuário) ---------- */
 var LS='notalista-v1';
 var state={
   user:null, house:null,
   lists:[], activeList:null, history:[], prices:{}, alerts:[]
 };
+function lsKey(){ return LS + (NL.auth.getUser() ? '-u' + (NL.auth.getUser().id || (NL.auth.getUser().email||'').replace(/\W/g,'')) : ''); }
 function load(){
-  try{var raw=localStorage.getItem(LS);if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
+  try{var raw=localStorage.getItem(lsKey());if(raw)state=Object.assign(state,JSON.parse(raw));}catch(e){}
 }
-function save(){localStorage.setItem(LS,JSON.stringify(state));}
+function save(){localStorage.setItem(lsKey(),JSON.stringify(state));}
 function $(id){return document.getElementById(id);}
 function brl(v){return 'R$ '+(+v).toFixed(2).replace('.',',');}
 function today(){return new Date().toISOString().slice(0,10);}
 function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
 
-/* ---------- onboarding ---------- */
+/* ---------- onboarding / conta ---------- */
 function ensureUser(){
-  if(state.user){return true;}
-  $('onboarding').hidden=false;
+  if(NL.auth.getUser()){return true;}
+  location.href='auth.html';
   return false;
 }
 $('obGo').addEventListener('click',function(){
@@ -45,7 +49,8 @@ $('obJoinGo').addEventListener('click',function(){
 function initApp(){
   $('onboarding').hidden=true;
   $('appRoot').hidden=false;
-  $('userAvatar').textContent=(state.user||'?').charAt(0).toUpperCase();
+  var u=NL.auth.getUser();
+  $('userAvatar').textContent=(NL.auth.displayName()||u&&u.email||'?').charAt(0).toUpperCase();
   $('houseBadge').textContent=state.house||'residência';
   if(!state.lists.length){
     state.lists=[{id:'l1',name:'Lista do mês',items:seedItems()}];
@@ -204,73 +209,124 @@ function renderAlerts(){
   if(!any)ul.innerHTML='<li class="muted">Nenhum alerta por enquanto.</li>';
 }
 
-/* ---------- scan simulado ---------- */
-var pendingPurchase=null;
-var DEMO_NOTES=[
-  {store:'Supermercado Boa Vida',date:today(),items:[
-    {name:'Café torrado e moído, 500 g',cat:'MERCADO',price:21.90},
-    {name:'Leite integral, cx 12 un',cat:'MERCADO',price:5.49},
-    {name:'Sabão em pó, 1 kg',cat:'LIMPEZA',price:12.30},
-    {name:'Tomate',cat:'HORTIFRUTI',price:8.90},
-    {name:'Pão francês',cat:'PADARIA',price:18.90}
-  ]},
-  {store:'Atacarejo Bom Preço',date:today(),items:[
-    {name:'Arroz tipo 1, 5 kg',cat:'MERCADO',price:23.90},
-    {name:'Óleo de soja, 900 ml',cat:'MERCADO',price:7.29},
-    {name:'Frango inteiro',cat:'AÇOUGUE',price:12.90},
-    {name:'Detergente neutro',cat:'LIMPEZA',price:2.29}
-  ]},
-  {store:'Farmácia Central',date:today(),items:[
-    {name:'Protetor solar FPS 50',cat:'FARMÁCIA',price:39.90},
-    {name:'Sabonete facial',cat:'FARMÁCIA',price:14.50},
-    {name:'Vitamina C 1 g, 20 cp',cat:'FARMÁCIA',price:22.90}
-  ]}
-];
+/* ---------- scan real: câmera + QR Sefaz ---------- */
+var pendingNote=null, pendingItems=null;
+
 function openScan(){
-  pendingPurchase=null;
+  pendingNote=null; pendingItems=null;
   $('scanResult').hidden=true;
   $('scanItems').innerHTML='';
+  $('scanMeta').textContent='';
+  $('scanError').hidden=true;
   $('scanConfirm').hidden=true;
-  $('scanSim').hidden=false;
-  $('scanFrame').hidden=false;
+  $('scanManual').hidden=false;
+  $('scanLabel').hidden=false;
+  $('scanHint').textContent='Aponte a câmera para o QR code do cupom fiscal.';
   $('scanModal').hidden=false;
+  NL.sefaz.startCamera(
+    $('scanVideo'),
+    function(text){ onQR(text); },
+    function(err){ scanFail(err); }
+  );
 }
-$('tabScan').addEventListener('click',openScan);
-$('scanClose').addEventListener('click',function(){$('scanModal').hidden=true;});
-$('scanSim').addEventListener('click',function(){
-  var note=DEMO_NOTES[Math.floor(Math.random()*DEMO_NOTES.length)];
-  pendingPurchase=JSON.parse(JSON.stringify(note));
-  $('scanFrame').hidden=true;
+function closeScan(){
+  NL.sefaz.stopCamera($('scanVideo'));
+  $('scanModal').hidden=true;
+}
+function scanFail(msg){
+  $('scanLabel').hidden=true;
+  var e=$('scanError');
+  e.innerHTML=esc(msg)+'<br><small>Você também pode colar o link do QR code do cupom em "Digitar link do QR".</small>';
+  e.hidden=false;
+  NL.sefaz.stopCamera($('scanVideo'));
+}
+function onQR(text){
+  NL.sefaz.stopCamera($('scanVideo'));
+  $('scanLabel').hidden=true;
+  $('scanError').hidden=true;
+  var note=NL.sefaz.parseQR(text);
+  if(!note.ok){ scanFail(note.error); return; }
+  pendingNote=note;
+  $('scanHint').textContent='Nota lida! Confirme os dados:';
+  $('scanStore').innerHTML='<span>'+(note.store?esc(note.store):'NFC-e '+note.numero)+'</span><time>'+(note.emissao?esc(note.emissao):'—')+'</time>';
+  $('scanMeta').innerHTML=
+    '<span class="meta-line">✔ Chave de acesso válida (DV ok)</span>'+
+    '<span class="meta-line">Emitente CNPJ '+note.cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{3})(\d{2})$/,'$1.$2.$3/$4-$5')+' · '+note.uf+'</span>'+
+    (note.valorTotal!=null?'<span class="meta-line">Valor total '+brl(note.valorTotal)+' ('+note.tpAmb+')</span>':'');
   $('scanResult').hidden=false;
-  $('scanStore').innerHTML='<span>'+esc(note.store)+'</span><time>'+fmtDate(note.date)+'</time>';
-  var box=$('scanItems');box.innerHTML='';
-  note.items.forEach(function(i){
-    var d=document.createElement('div');
-    d.className='panel-row';
-    d.innerHTML='<span>'+esc(i.name)+'</span><em>'+brl(i.price)+'</em>';
-    box.appendChild(d);
+
+  // itens: proxy Sefaz se configurado
+  $('scanItems').innerHTML='<p class="muted" style="text-align:left">Buscando itens na Sefaz…</p>';
+  NL.sefaz.fetchItems(note,function(items,err){
+    var box=$('scanItems'); box.innerHTML='';
+    if(err){ box.innerHTML='<div class="scan-error" style="display:block">'+esc(err.error||err.reason||'Falha ao buscar itens.')+'</div>'; }
+    else if(items && items.length){
+      pendingItems=items;
+      $('scanHint').textContent='Itens lidos da Sefaz. Confirme:';
+      items.forEach(function(i){
+        var d=document.createElement('div');
+        d.className='panel-row';
+        d.innerHTML='<span>'+esc(i.name)+(i.qty?' <em style="color:var(--ink2)">×'+i.qty+'</em>':'')+'</span><em>'+brl(i.price)+'</em>';
+        box.appendChild(d);
+      });
+    } else {
+      // sem proxy: dados reais do QR + itens manuais
+      box.innerHTML=
+        '<div class="scan-error" style="display:block">'+esc((err&&err.reason)||'Itens indisponíveis sem proxy.')+'</div>'+
+        '<button class="btn btn-ghost" id="scanAddManual" style="width:100%;justify-content:center;margin-top:8px">Digitar itens desta nota</button>';
+      var b=document.getElementById('scanAddManual');
+      if(b) b.addEventListener('click',function(){ closeScan(); $('itemModal').hidden=false; $('itName').focus(); });
+    }
+    $('scanConfirm').hidden = !(pendingItems && pendingItems.length);
+    $('scanManual').hidden = false;
+    if(!(pendingItems && pendingItems.length) && !err) showAddItems();
   });
-  $('scanSim').hidden=true;
-  $('scanConfirm').hidden=false;
+}
+function showAddItems(){ /* usado quando itens chegam vazios sem erro */ }
+
+$('tabScan').addEventListener('click',openScan);
+$('scanClose').addEventListener('click',closeScan);
+$('scanManual').addEventListener('click',function(){
+  NL.sefaz.stopCamera($('scanVideo'));
+  $('scanModal').hidden=true;
+  $('manualModal').hidden=false;
+  $('manualUrl').focus();
 });
+$('manualCancel').addEventListener('click',function(){ $('manualModal').hidden=true; });
+$('manualGo').addEventListener('click',function(){
+  var url=$('manualUrl').value.trim();
+  if(!url){$('manualUrl').focus();return;}
+  $('manualModal').hidden=true;
+  $('scanModal').hidden=false;
+  $('scanLabel').hidden=true;
+  onQR(url);
+});
+
 $('scanConfirm').addEventListener('click',function(){
-  if(!pendingPurchase)return;
-  // registra histórico
-  var total=pendingPurchase.items.reduce(function(s,i){return s+i.price},0);
-  state.history.unshift({store:pendingPurchase.store,date:pendingPurchase.date,items:pendingPurchase.items,total:total});
+  if(!pendingNote || !pendingItems) return;
+  // registra histórico (dados reais da nota)
+  var total=pendingNote.valorTotal!=null ? pendingNote.valorTotal : pendingItems.reduce(function(s,i){return s+i.price*(i.qty||1)},0);
+  state.history.unshift({
+    store:pendingNote.store||('NFC-e '+pendingNote.numero),
+    date:today(),
+    items:pendingItems.map(function(i){return {name:i.name,cat:'MERCADO',price:i.price};}),
+    total:total,
+    chave:pendingNote.chave,
+    uf:pendingNote.uf
+  });
   // registra preços
-  pendingPurchase.items.forEach(function(i){
+  pendingItems.forEach(function(i){
     (state.prices[i.name]=state.prices[i.name]||[]).push(i.price);
   });
-  // mescla na lista ativa (itens novos entram)
+  // mescla na lista ativa
   var l=currentList();
-  pendingPurchase.items.forEach(function(i){
+  pendingItems.forEach(function(i){
     var exists=l.items.some(function(x){return x.name===i.name});
-    if(!exists)l.items.push({id:iid(),name:i.name,cat:i.cat,price:i.price,done:false,note:'da nota '+pendingPurchase.store});
+    if(!exists)l.items.push({id:iid(),name:i.name,cat:i.cat||'MERCADO',price:i.price,done:false,note:'da NFC-e '+pendingNote.numero});
   });
-  toast('Nota lida: '+pendingPurchase.items.length+' itens adicionados ✓');
-  pendingPurchase=null;
-  $('scanModal').hidden=true;
+  toast('Nota '+pendingNote.numero+' lida: '+pendingItems.length+' itens ✓');
+  pendingNote=null; pendingItems=null;
+  closeScan();
   save();renderAll();switchTab('buy');
 });
 
@@ -312,7 +368,9 @@ function toast(msg){
 }
 
 /* ---------- boot ---------- */
-load();
-if(!ensureUser()){$('onboarding').hidden=false;}
-else{initApp();}
+NL.auth.init().then(function(){
+  load();
+  if(!ensureUser()){$('appRoot').hidden=true;}
+  else{initApp();}
+});
 })();

@@ -1,10 +1,12 @@
 /* NotaLista — service worker (cache simples, sem dependências) */
-var CACHE='notalista-v1';
+var CACHE='notalista-v2';
 var ASSETS=[
-  './','./index.html','./app.html','./manifest.json',
-  './css/style.css','./css/app.css','./js/landing.js','./js/app.js',
+  './','./index.html','./app.html','./auth.html','./manifest.json',
+  './css/style.css','./css/app.css',
+  './js/config.js','./js/auth.js','./js/sefaz.js','./js/landing.js','./js/app.js',
   './img/icon.svg'
 ];
+/* libs em CDN (supabase-js, jsQR) entram no cache no primeiro acesso */
 self.addEventListener('install',function(e){
   e.waitUntil(caches.open(CACHE).then(function(c){return c.addAll(ASSETS)}));
 });

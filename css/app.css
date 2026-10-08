@@ -29,19 +29,39 @@
   display:flex;align-items:center;justify-content:center;
   background:var(--bg);color:var(--ink2);font-size:.82rem;font-weight:600;
 }
-.scan-line{
-  position:absolute;left:8%;right:8%;height:3px;border-radius:3px;
-  background:var(--coral);box-shadow:0 0 14px rgba(229,90,63,.7);
-  animation:scanmove 2.2s ease-in-out infinite;
+.scan-frame.video{background:#1E1712;border:2.5px solid var(--coral)}
+.scan-frame video{width:100%;height:100%;object-fit:cover}
+.scan-label{
+  position:absolute;bottom:8px;left:0;right:0;text-align:center;
+  color:#fff;font-size:.72rem;font-weight:700;
+  text-shadow:0 1px 4px rgba(0,0,0,.8);
 }
-@keyframes scanmove{0%,100%{top:12%}50%{top:86%}}
-.scan-store{
-  font-weight:700;margin:14px 0 6px;display:flex;justify-content:space-between;
-  font-size:.9rem;
+.scan-meta{display:flex;flex-direction:column;gap:4px;margin:8px 0 4px;text-align:left}
+.scan-meta .meta-line{font-size:.8rem;color:var(--ink2)}
+.scan-meta .meta-line:first-child{color:var(--green);font-weight:700}
+.scan-error{
+  background:var(--coral-bg);border:1px solid rgba(229,90,63,.35);
+  color:var(--coral-d);border-radius:12px;padding:10px 14px;
+  font-size:.8rem;text-align:left;margin-top:8px;
 }
-.scan-store time{color:var(--ink2);font-weight:600;font-size:.8rem}
-#scanItems{max-height:190px;overflow:auto;text-align:left}
-#scanItems .panel-row{margin-bottom:6px}
+.scan-error small{color:var(--ink2)}
+/* login */
+.login-wrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{
+  background:var(--card);border-radius:var(--radius-lg);box-shadow:var(--shadow);
+  padding:34px 30px;width:min(420px,100%);text-align:center;
+}
+.login-card h2{font-family:var(--serif);font-size:1.5rem;margin:10px 0 4px}
+.login-card .muted{color:var(--ink2);font-size:.9rem;margin-bottom:16px}
+.cloud-badge{
+  display:inline-block;background:var(--green-bg);color:var(--green);
+  border-radius:999px;font-size:.75rem;font-weight:700;padding:5px 14px;margin-bottom:18px;
+}
+.msg{margin-top:14px;font-size:.85rem;border-radius:12px;padding:10px 14px}
+.msg.ok{background:var(--green-bg);color:var(--green)}
+.msg.err{background:var(--coral-bg);color:var(--coral-d)}
+.local-block{margin-top:22px;border-top:1px dashed var(--line);padding-top:16px}
+.local-block .muted{font-size:.8rem;margin-bottom:10px}
 
 /* ---------- Toast ---------- */
 .toast{
